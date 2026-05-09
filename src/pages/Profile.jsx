@@ -10,7 +10,7 @@ export default function Profile() {
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/users/${userId}`);
+      const response = await axios.get(`/api/users/${userId}`);
       setUser(response.data);
       setNewAvatarUrl(response.data.avatar || '');
     } catch (error) {
@@ -28,7 +28,7 @@ export default function Profile() {
 
   const handleSaveAvatar = async () => {
     try {
-      await axios.put(`http://localhost:3001/api/users/${userId}`, { avatar: newAvatarUrl });
+      await axios.put(`/api/users/${userId}`, { avatar: newAvatarUrl });
       setIsEditingAvatar(false);
       fetchUser();
     } catch (error) {

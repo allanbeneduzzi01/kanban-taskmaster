@@ -18,8 +18,8 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       const [dashRes, userRes] = await Promise.all([
-        axios.get(`http://localhost:3001/api/dashboard/${userId}`),
-        axios.get(`http://localhost:3001/api/users/${userId}`)
+        axios.get(`/api/dashboard/${userId}`),
+        axios.get(`/api/users/${userId}`)
       ]);
       setStats(dashRes.data);
       setUser(userRes.data);
@@ -44,7 +44,7 @@ export default function Dashboard() {
     e.preventDefault();
     if (!newTask.title.trim()) return;
     try {
-      await axios.post('http://localhost:3001/api/tasks', { ...newTask, user_id: userId });
+      await axios.post('/api/tasks', { ...newTask, user_id: userId });
       setIsModalOpen(false);
       setNewTask({ title: '', description: '', start_time: '', duration_minutes: 60, priority: 'medium', category: 'trabalho', tags: [] });
       fetchDashboardData();

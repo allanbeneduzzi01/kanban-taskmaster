@@ -26,7 +26,7 @@ export default function Tasks() {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/tasks/${userId}`);
+      const response = await axios.get(`/api/tasks/${userId}`);
       setTasks(response.data);
     } catch (error) {
       console.error('Erro ao buscar tarefas:', error);
@@ -77,9 +77,9 @@ export default function Tasks() {
     setErrorMsg('');
     try {
       if (editingTaskId) {
-        await axios.put(`http://localhost:3001/api/tasks/${editingTaskId}`, { ...newTask });
+        await axios.put(`/api/tasks/${editingTaskId}`, { ...newTask });
       } else {
-        await axios.post('http://localhost:3001/api/tasks', { ...newTask, user_id: userId });
+        await axios.post('/api/tasks', { ...newTask, user_id: userId });
       }
       setIsModalOpen(false);
       resetForm();
@@ -93,7 +93,7 @@ export default function Tasks() {
   const handleDeleteTask = async () => {
     if (!taskToDelete) return;
     try {
-      await axios.delete(`http://localhost:3001/api/tasks/${taskToDelete.id}`);
+      await axios.delete(`/api/tasks/${taskToDelete.id}`);
       setIsDeleteModalOpen(false);
       setTaskToDelete(null);
       fetchTasks();
@@ -106,7 +106,7 @@ export default function Tasks() {
   const handleToggleStatus = async (task) => {
     const newStatus = task.status === 'completed' ? 'pending' : 'completed';
     try {
-      await axios.put(`http://localhost:3001/api/tasks/${task.id}`, { status: newStatus });
+      await axios.put(`/api/tasks/${task.id}`, { status: newStatus });
       fetchTasks();
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
@@ -217,7 +217,7 @@ export default function Tasks() {
           return t;
         }));
         
-        await axios.put(`http://localhost:3001/api/tasks/${taskId}`, updates);
+        await axios.put(`/api/tasks/${taskId}`, updates);
         fetchTasks(); // Garante os dados frescos do backend
       }
     } catch (error) {

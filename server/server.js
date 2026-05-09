@@ -1,9 +1,9 @@
-const express = require('express');
-const cors = require('cors');
-const db = require('./db');
+import express from 'express';
+import cors from 'cors';
+import db from './db.js';
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
@@ -49,16 +49,12 @@ app.get('/api/dashboard/:userId', (req, res) => {
     rows.forEach(task => {
       if (task.status === 'completed') {
         completed++;
-        
-        // Simulação básica para 7 dias (como não salvamos data de conclusão, 
-        // vamos inferir pelo start_time se estiver dentro dos 7 dias para visual)
         if (task.start_time) {
            const startTimeDate = new Date(task.start_time);
            if (startTimeDate >= sevenDaysAgo && startTimeDate <= now) {
               completedLast7Days++;
            }
         } else {
-           // Fallback
            completedLast7Days++; 
         }
       } else {
@@ -71,14 +67,13 @@ app.get('/api/dashboard/:userId', (req, res) => {
       }
     });
 
-    // Ordenar upcomingTasks
     upcomingTasks.sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
     
     res.json({ 
       total, 
       completed, 
       completedLast7Days,
-      upcomingTasks: upcomingTasks.slice(0, 5) // Top 5 mais próximas
+      upcomingTasks: upcomingTasks.slice(0, 5)
     });
   });
 });
@@ -105,7 +100,6 @@ app.get('/api/tasks/:userId', (req, res) => {
     if (err) return res.status(500).json({ error: err.message });
     if (tasks.length === 0) return res.json([]);
 
-    // Buscar tags para essas tarefas
     const taskIds = tasks.map(t => t.id).join(',');
     const tagsQuery = `
       SELECT tt.task_id, t.id, t.name 
@@ -148,9 +142,6 @@ app.post('/api/tasks', (req, res) => {
     const taskId = this.lastID;
     
     if (tags && tags.length > 0) {
-      // tags é um array de strings ['urgente', 'cliente']
-      // 1. Inserir tags que não existem
-      // 2. Criar relações em task_tags
       let tagsProcessed = 0;
       
       tags.forEach(tagName => {
@@ -183,7 +174,7 @@ app.post('/api/tasks', (req, res) => {
   });
 });
 
-// Rota: Atualizar Tarefa (Status e afins, Tags não atualizadas nessa simplificação)
+// Rota: Atualizar Tarefa
 app.put('/api/tasks/:id', (req, res) => {
   const taskId = req.params.id;
   const { title, description, start_time, duration_minutes, priority, category, status } = req.body;
@@ -215,6 +206,13 @@ app.delete('/api/tasks/:id', (req, res) => {
   });
 });
 
-app.listen(port, () => {
-  console.log("Servidor rodando na porta " + port);
-});
+// Export for Vercel
+export default app;
+
+// Start locally
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log("Servidor rodando na porta " + port);
+  });
+}
+

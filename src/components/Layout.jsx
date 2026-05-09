@@ -11,7 +11,7 @@ export default function Layout() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/users/${userId}`);
+        const response = await axios.get(`/api/users/${userId}`);
         setUser(response.data);
       } catch (error) {
         console.error('Erro ao buscar perfil:', error);
